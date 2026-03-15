@@ -331,9 +331,10 @@ const autoAddMovies = inngest.createFunction(
           const showTimes = ["10:00", "14:00", "18:00", "21:00"];
 
           for (const time of showTimes) {
-            const showDateTime = new Date(
-              `${date.toISOString().split("T")[0]}T${time}`,
-            );
+            for (const time of showTimes) {
+              const [hours, minutes] = time.split(":").map(Number);
+              const showDateTime = new Date(date);
+              showDateTime.setHours(hours, minutes, 0, 0);
 
             const existingShow = await Show.findOne({
               movie: movieId,
