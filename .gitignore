@@ -131,3 +131,5 @@ vite.config.ts.timestamp-*
 .firebase/
 .tern-port
 .vscode-test
+
+quickshowPreview.mp4
