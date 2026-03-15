@@ -12,7 +12,7 @@ export const getNowPlayingMovies = async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
         },
-      }
+      },
     );
 
     const movies = data.results;
@@ -105,9 +105,11 @@ export const getShows = async (req, res) => {
       .sort({ showDateTime: 1 });
 
     // Filter unique shows
-    const uniqueMovieIds = new Set(shows.map((show) => show.movie._id.toString()));
+    const uniqueMovieIds = new Set(
+      shows.map((show) => show.movie._id.toString()),
+    );
     const uniqueShows = Array.from(uniqueMovieIds).map((id) =>
-      shows.find((show) => show.movie._id.toString() === id)
+      shows.find((show) => show.movie._id.toString() === id),
     );
 
     res.json({ success: true, shows: uniqueShows.map((show) => show.movie) });
@@ -140,6 +142,23 @@ export const getShow = async (req, res) => {
     });
 
     res.json({ success: true, movie, dateTime });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// API to get all shows for admin dashboard
+export const getAllShowsAdmin = async (req, res) => {
+  try {
+    const shows = await Show.find({})
+      .populate("movie")
+      .sort({ showDateTime: -1 });
+
+    res.json({
+      success: true,
+      shows,
+    });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: error.message });
