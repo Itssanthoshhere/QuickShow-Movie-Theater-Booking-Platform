@@ -3,6 +3,8 @@ import User from "../models/User.js";
 import Booking from "../models/Booking.js";
 import Show from "../models/Show.js";
 import sendEmail from "../configs/nodemailer.js";
+import axios from "axios";
+import Movie from "../models/Movie.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "movie-ticket-booking" });
@@ -27,7 +29,7 @@ const syncUserCreation = inngest.createFunction(
       console.error("Failed to create user:", error);
       throw error; // Inngest will retry
     }
-  }
+  },
 );
 
 // Inngest Function to delete user data in database
@@ -45,7 +47,7 @@ const syncUserDeletion = inngest.createFunction(
       console.error("Failed to delete user:", error);
       throw error;
     }
-  }
+  },
 );
 
 // Inngest Function to update user data in database
@@ -62,7 +64,7 @@ const syncUserUpdation = inngest.createFunction(
       image: image_url,
     };
     await User.findByIdAndUpdate(id, userData);
-  }
+  },
 );
 
 // Inngest Function to cancel booking and release seats of show after 10 minutes of booking created if payment is not made
@@ -89,7 +91,7 @@ const releaseSeatsAndDeleteBooking = inngest.createFunction(
         await Booking.findByIdAndDelete(booking._id);
       }
     });
-  }
+  },
 );
 
 // Inngest Function to send email when user books a show
@@ -119,12 +121,12 @@ const sendBookingConfirmationEmail = inngest.createFunction(
     </p>
     <p>
       <strong>Date:</strong> ${new Date(
-        booking.show.showDateTime
+        booking.show.showDateTime,
       ).toLocaleDateString("en-US", {
         timeZone: "Asia/Kolkata",
       })}<br/>
       <strong>Time:</strong> ${new Date(
-        booking.show.showDateTime
+        booking.show.showDateTime,
       ).toLocaleTimeString("en-US", {
         timeZone: "Asia/Kolkata",
       })}
@@ -136,7 +138,7 @@ const sendBookingConfirmationEmail = inngest.createFunction(
     </p>
   </div>`,
     });
-  }
+  },
 );
 
 // Inngest Function to send reminders
@@ -168,7 +170,7 @@ const sendShowReminders = inngest.createFunction(
         }
 
         const users = await User.find({ _id: { $in: userIds } }).select(
-          "name email"
+          "name email",
         );
         for (const user of users) {
           tasks.push({
@@ -223,8 +225,8 @@ const sendShowReminders = inngest.createFunction(
       <span style="color: #F84565; font-weight: bold;">– QuickShow Team</span>
     </p>
   </div>`,
-          })
-        )
+          }),
+        ),
       );
     });
 
@@ -236,7 +238,7 @@ const sendShowReminders = inngest.createFunction(
       failed,
       message: `Sent ${sent} reminder(s), ${failed} failed.`,
     };
-  }
+  },
 );
 
 // Inngest Function to send notifications when a new show is added
@@ -275,7 +277,87 @@ const sendNewShowNotifications = inngest.createFunction(
     return {
       message: "Notifications sent.",
     };
-  }
+  },
+);
+
+// Inngest Function to auto add movies and shows every day using TMDB API
+const autoAddMovies = inngest.createFunction(
+  { id: "auto-add-movies" },
+  {
+    cron: "0 0 * * *", // runs every day
+  },
+  async () => {
+    try {
+      const { data } = await axios.get(
+        "https://api.themoviedb.org/3/movie/now_playing",
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+          },
+        },
+      );
+
+      const movies = data.results.slice(0, 5); // top 5 movies
+
+      for (const movie of movies) {
+        const movieId = movie.id.toString();
+
+        let movieExists = await Movie.findById(movieId);
+
+        if (!movieExists) {
+          const movieDetails = {
+            _id: movieId,
+            title: movie.title,
+            overview: movie.overview,
+            poster_path: movie.poster_path,
+            backdrop_path: movie.backdrop_path,
+            release_date: movie.release_date,
+            original_language: movie.original_language,
+            tagline: "",
+            genres: [],
+            casts: [],
+            vote_average: movie.vote_average,
+            runtime: 120,
+          };
+
+          movieExists = await Movie.create(movieDetails);
+        }
+
+        // create shows for next 5 days
+        for (let i = 1; i <= 5; i++) {
+          const date = new Date();
+          date.setDate(date.getDate() + i);
+
+          const showTimes = ["10:00", "14:00", "18:00", "21:00"];
+
+          for (const time of showTimes) {
+            for (const time of showTimes) {
+              const [hours, minutes] = time.split(":").map(Number);
+              const showDateTime = new Date(date);
+              showDateTime.setHours(hours, minutes, 0, 0);
+
+            const existingShow = await Show.findOne({
+              movie: movieId,
+              showDateTime,
+            });
+
+            if (!existingShow) {
+              await Show.create({
+                movie: movieId,
+                showDateTime,
+                showPrice: 250,
+                occupiedSeats: {},
+              });
+            }
+          }
+        }
+      }
+
+      return { message: "Movies and shows updated automatically." };
+    } catch (error) {
+      console.error(error);
+    }
+  },
 );
 
 // Create an empty array where we'll export future Inngest functions
@@ -287,4 +369,5 @@ export const functions = [
   sendBookingConfirmationEmail,
   sendShowReminders,
   sendNewShowNotifications,
+  autoAddMovies,
 ];
