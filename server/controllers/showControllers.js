@@ -147,20 +147,3 @@ export const getShow = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-
-// API to get all shows for admin dashboard
-export const getAllShowsAdmin = async (req, res) => {
-  try {
-    const shows = await Show.find({})
-      .populate("movie")
-      .sort({ showDateTime: -1 });
-
-    res.json({
-      success: true,
-      shows,
-    });
-  } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: error.message });
-  }
-};

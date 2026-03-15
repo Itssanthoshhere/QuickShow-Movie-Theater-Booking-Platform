@@ -35,7 +35,7 @@ export const getDashboardData = async (req, res) => {
 export const getAllShows = async (req, res) => {
   try {
     const shows = await Show.find({
-      showDateTime: { $gte: new Date() },
+      // showDateTime: { $gte: new Date() },
     })
       .populate("movie")
       .sort();

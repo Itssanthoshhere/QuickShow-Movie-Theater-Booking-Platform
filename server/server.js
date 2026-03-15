@@ -20,12 +20,21 @@ await connectDB();
 app.use(
   "/api/stripe",
   express.raw({ type: "application/json" }),
-  stripeWebhooks
+  stripeWebhooks,
 );
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://quick-show-ticketbooking.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 app.use(clerkMiddleware());
 
 // API Routes
@@ -37,5 +46,5 @@ app.use("/api/admin", adminRouter);
 app.use("/api/user", userRouter);
 
 app.listen(port, () =>
-  console.log(`server listening at http://localhost:${port}`)
+  console.log(`server listening at http://localhost:${port}`),
 );
