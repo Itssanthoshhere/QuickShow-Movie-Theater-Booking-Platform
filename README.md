@@ -33,93 +33,147 @@
 
 ## 📋 Table of Contents
 
-1. ✨ [Introduction](#introduction)
-2. ⚙️ [Tech Stack](#tech-stack)
-3. 🔋 [Features](#features)
-4. 🤸 [Quick Start](#quick-start)
-5. 🧱 [Project Structure](#project-structure)
-6. 🧩 [API Overview](#api-overview)
-7. 📝 [Customization](#customization)
-8. 🤝 [Contribution](#contribution)
-9. 🔗 [Contacts](#contacts)
-10. 📄 [License](#license)
-11. 🙏 [Acknowledgements](#acknowledgements)
+1. ✨ Introduction
+2. ⚙️ Tech Stack
+3. 🔋 Features
+4. ⚡ Automation & Background Jobs
+5. 🤸 Quick Start
+6. 🧱 Project Structure
+7. 🧩 API Overview
+8. 🚀 Deployment
+9. 📝 Customization
+10. 🤝 Contribution
+11. 🔗 Contacts
+12. 📄 License
+13. 🙏 Acknowledgements
 
 ---
 
 ## ✨ Introduction
 
-**QuickShow** is a **modern movie theater booking platform** that simplifies ticket management for users and admins alike.  
-It features **real-time seat booking**, **secure payments**, and **an intuitive admin dashboard** for theater management.
+**QuickShow** is a modern **movie theater booking platform** that simplifies ticket management for users and administrators.
 
-🎯 Whether you’re running a cinema or booking your next movie night — QuickShow offers a seamless, interactive experience.
+It provides a **complete end-to-end cinema booking experience**, including:
+
+* real-time seat selection
+* secure payment processing
+* automated show management
+* email notifications
+* background job automation
+
+The system also integrates **TMDB movie data** and **Inngest workflows** to automatically keep the platform updated with new movies and shows.
+
+🎯 Whether you're running a cinema or booking your next movie night — QuickShow delivers a seamless experience.
 
 ---
 
 ## ⚙️ Tech Stack
 
-### 💻 Frontend
+## 💻 Frontend
 
-- **React 19 + Vite** – Fast, modern frontend setup for interactive UIs
-- **Tailwind CSS 4** – Clean, responsive design system
-- **React Router DOM** – Smooth navigation and route management
-- **Axios** – For efficient API communication
-- **Lucide React** – Lightweight and elegant icon library
+* **React 19 + Vite** – Fast modern frontend stack
+* **Tailwind CSS 4** – Responsive UI styling
+* **React Router DOM** – Navigation and routing
+* **Axios** – API communication
+* **Lucide React** – Lightweight icon system
 
-### ⚙️ Backend
+---
 
-- **Node.js + Express 5** – Robust API and server framework
-- **MongoDB + Mongoose** – Scalable and schema-based data management
-- **Stripe** – Secure online payment processing
-- **Clerk** – Authentication and user management with roles
-- **Cloudinary** – Media storage for posters and images
-- **Nodemailer** – Automated booking email confirmations
-- **Inngest** – Background jobs and workflow automation
+## ⚙️ Backend
+
+* **Node.js + Express 5** – Backend API framework
+* **MongoDB + Mongoose** – Database and schema management
+* **Stripe** – Secure payment processing
+* **Clerk** – Authentication and user management
+* **TMDB API** – Movie data provider
+* **Cloudinary** – Media storage for images
+* **Nodemailer** – Email notifications
+* **Inngest** – Background jobs and workflow automation
 
 ---
 
 ## 🔋 Features
 
 - 🎟️ **Smart Booking System** – Real-time seat availability and interactive seat layouts
-- 💳 **Secure Payments** – Integrated with **Stripe** for ticket purchases
-- 👥 **User Management** – Login, favorites, and profile powered by **Clerk**
-- 🧑‍💼 **Admin Dashboard** – Manage movies, shows, and analytics
-- 🎬 **Movie Catalog** – Browse movies with ratings, trailers, and details
-- 📧 **Email Notifications** – Instant booking confirmations via **Nodemailer**
-- ☁️ **Cloud Storage** – Efficient media management using **Cloudinary**
-- 📱 **Responsive UI** – Seamless experience on all devices
-- ⚡ **Event Workflows** – Background operations powered by **Inngest**
+- 💳 **Secure Payments** – Integrated with **Stripe Checkout** and webhooks
+- 👥 **User Management** – Authentication, profiles, and favorites powered by **Clerk**
+- 🧑‍💼 **Admin Dashboard** – Manage movies, shows, and bookings from a centralized admin panel
+- 🎬 **Movie Catalog** – Browse movies with posters, ratings, runtime, and details
+- 🔄 **Automatic Movie Sync** – Fetches **Now Playing movies from TMDB API**
+- 📅 **Automatic Show Generation** – Background job automatically creates shows for upcoming days
+- 📧 **Email Notifications** – Booking confirmations and reminders via **Nodemailer**
+- ⏰ **Background Workflows** – Powered by **Inngest** for:
+  - user synchronization
+  - booking validation
+  - payment verification
+  - show reminders
+  - automated movie updates
+- ☁️ **Cloud Storage** – Media storage handled using **Cloudinary**
+- 📱 **Responsive UI** – Optimized for desktop, tablet, and mobile devices
 
 ---
 
-## 🤸 Quick Start
+## ⚡ Automation & Background Jobs
 
-### Prerequisites
+QuickShow uses **Inngest workflows** to automate backend operations.
 
-Ensure the following are installed:
+### Automated Workflows
 
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/)
-- [MongoDB Atlas](https://www.mongodb.com/atlas)
-- [Vercel](https://vercel.com/) (for deployment)
+| Workflow               | Description                              |
+| ---------------------- | ---------------------------------------- |
+| User Sync              | Syncs Clerk users to MongoDB             |
+| Payment Validation     | Cancels unpaid bookings after 10 minutes |
+| Booking Confirmation   | Sends confirmation email after payment   |
+| Show Reminders         | Sends reminder emails before showtime    |
+| New Show Notifications | Alerts users when new shows are added    |
+| TMDB Movie Sync        | Fetches now-playing movies automatically |
+| Show Generator         | Creates showtimes for upcoming days      |
 
-### Installation Steps
+These workflows ensure the platform stays **fully automated and up-to-date** without manual admin work.
+
+---
+
+# 🤸 Quick Start
+
+## Prerequisites
+
+Install the following:
+
+* Git
+* Node.js
+* MongoDB Atlas
+* Vercel (for deployment)
+
+---
+
+## Clone the Repository
 
 ```bash
-# Clone the repository
 git clone https://github.com/Itssanthoshhere/QuickShow-Movie-Theater-Booking-Platform.git
 cd QuickShow-Movie-Theater-Booking-Platform
-
-# Install dependencies
-cd client && npm install
-cd ../server && npm install
 ```
 
-### Environment Variables
+---
 
-Create `.env` files in both `client` and `server` directories:
+## Install Dependencies
 
-#### Server (.env)
+```bash
+cd client
+npm install
+
+cd ../server
+npm install
+```
+
+---
+
+## Environment Variables
+
+Create `.env` files for **client** and **server**.
+
+---
+
+### Server `.env`
 
 ```env
 MONGODB_URI=
@@ -141,7 +195,13 @@ SMTP_USER=
 SMTP_PASS=
 ```
 
-#### Client (.env)
+TMDB_API_KEY should be the **TMDB Read Access Token (v4)** from:
+
+[https://www.themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
+
+---
+
+### Client `.env`
 
 ```env
 VITE_CURRENCY='₹'
@@ -153,19 +213,29 @@ VITE_BASE_URL=http://localhost:3000
 VITE_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p/original
 ```
 
-### Run the Project
+---
+
+## Run the Project
+
+Start backend:
 
 ```bash
-# Start backend
 cd server
 npm run dev
+```
 
-# Start frontend
+Start frontend:
+
+```bash
 cd client
 npm run dev
 ```
 
-Open 👉 [http://localhost:5173](http://localhost:5173) to explore QuickShow.
+Open:
+
+```
+http://localhost:5173
+```
 
 ---
 
@@ -178,11 +248,13 @@ QuickShow/
 │   ├── public/
 │   ├── vite.config.js
 │   └── vercel.json
+│
 └── server/
     ├── configs/
     ├── controllers/
     ├── models/
     ├── routes/
+    ├── middleware/
     ├── inngest/
     ├── server.js
     └── vercel.json
@@ -192,15 +264,44 @@ QuickShow/
 
 ## 🧩 API Overview
 
-| Endpoint                     | Method | Description                   |
-| ---------------------------- | ------ | ----------------------------- |
-| `/api/show`                  | GET    | Fetch available shows         |
-| `/api/booking`               | POST   | Create a new booking          |
-| `/api/user/bookings`         | GET    | Get all user bookings         |
-| `/api/user/update-favourite` | POST   | Add or remove favorite movies |
-| `/api/user/favourites`       | GET    | Fetch user favorite movies    |
-| `/api/admin/add-show`        | POST   | Admin: Add a new show         |
-| `/api/stripe/webhook`        | POST   | Stripe webhook for payments   |
+| Endpoint                     | Method | Description                 |
+| ---------------------------- | ------ | --------------------------- |
+| `/api/show`                  | GET    | Fetch available shows       |
+| `/api/show/:movieId`         | GET    | Fetch showtimes for a movie |
+| `/api/booking`               | POST   | Create booking              |
+| `/api/user/bookings`         | GET    | Get user bookings           |
+| `/api/user/favourites`       | GET    | Fetch favourite movies      |
+| `/api/user/update-favourite` | POST   | Add/remove favourite movie  |
+| `/api/admin/add-show`        | POST   | Add a new show              |
+| `/api/admin/all-bookings`    | GET    | Get all bookings            |
+| `/api/admin/dashboard`       | GET    | Admin analytics             |
+| `/api/stripe/webhook`        | POST   | Stripe payment webhook      |
+
+---
+
+## 🚀 Deployment
+
+QuickShow is deployed using **Vercel**.
+
+### Frontend
+
+```
+https://quick-show-ticketbooking.vercel.app/
+```
+
+### Backend API
+
+```
+https://quick-show-servers.vercel.app/
+```
+
+The backend handles:
+
+* authentication
+* bookings
+* payments
+* background workflows
+* automated movie syncing
 
 ---
 
@@ -217,11 +318,26 @@ QuickShow/
 
 Contributions are welcome!
 
-1. Fork this repository
-2. Create a new branch (`feature/my-feature`)
-3. Commit your changes (`feat: added new feature`)
-4. Push to your branch
-5. Submit a Pull Request 🎉
+1. Fork the repository
+2. Create a feature branch
+
+```
+git checkout -b feature/my-feature
+```
+
+3. Commit your changes
+
+```
+git commit -m "feat: add new feature"
+```
+
+4. Push the branch
+
+```
+git push origin feature/my-feature
+```
+
+5. Open a Pull Request
 
 ---
 
